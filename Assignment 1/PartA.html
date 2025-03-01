@@ -1,1 +1,91 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Web Page</title>
+    <style>
+        header {
+            background-color: lightgreen;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        nav {
+            width: 100%;
+            display: flex;
+            background-color: #ddd;
+            padding: 10px;
+            text-align: center;
+            justify-content: space-evenly;
+        }
+        
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background-color: blue;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        footer {
+            position: absolute;
+            width:100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            justify-content: center;
+            padding: 10px;
+
+            bottom: 0px;
+        
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        My First Web Page
+    </header>
+
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Contact</a>
+    </nav>
+
+    <div class="container">
+        <h2>Welcome to My Web Page</h2>
+        <p>This is a simple webpage demonstrating HTML and CSS.</p>
+
+        <h3>My Favorite Foods</h3>
+        <ul>
+            <li>Pizza</li>
+            <li>Burgers</li>
+            <li>Pasta</li>
+        </ul>
+
+        <h3>Steps to Make a Website</h3>
+        <ol>
+            <li>Learn HTML</li>
+            <li>Learn CSS</li>
+            <li>Learn JavaScript</li>
+        </ol>
+
+        
+        <h3>Click the Button Below</h3>
+        <button onclick="alert('Button Clicked!')">Click Me</button>
+    </div>
+
+    <footer>
+        &copy; 2025 My First Web Page
+    </footer>
+
+</body>
+</html>
