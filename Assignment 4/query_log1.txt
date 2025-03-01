@@ -1,0 +1,311 @@
+mysql> SELECT * FROM emp;
++-------+----------+-------+------------+------------+--------+
+| EmpNo | Ename    | Sal   | Hire_Date  | Commission | DeptNo |
++-------+----------+-------+------------+------------+--------+
+|  1001 | Sachin   | 19000 | 1990-01-01 |       2100 |     20 |
+|  1002 | Kapil    | 15000 | 1970-01-01 |       2300 |     10 |
+|  1003 | Stefen   | 12000 | 1990-01-01 |        500 |     20 |
+|  1004 | Williams |  9000 | 2001-01-01 |       NULL |     30 |
+|  1005 | John     |  5000 | 2005-01-01 |       NULL |     30 |
+|  1006 | Dravid   | 19000 | 1985-01-01 |       2400 |     10 |
+|  1007 | Martin   | 21000 | 2000-01-01 |       1040 |   NULL |
++-------+----------+-------+------------+------------+--------+
+7 rows in set (0.00 sec)
+
+mysql> select * from dept
+    -> ;
++--------+------------+-----------+
+| DeptNo | Dname      | Loc       |
++--------+------------+-----------+
+|     10 | Accounts   | Bangalore |
+|     20 | IT         | Delhi     |
+|     30 | Production | Chennai   |
+|     40 | Sales      | Hyd       |
+|     50 | Admin      | London    |
++--------+------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from emp where deptno =10 or deptno=30;
++-------+----------+-------+------------+------------+--------+
+| EmpNo | Ename    | Sal   | Hire_Date  | Commission | DeptNo |
++-------+----------+-------+------------+------------+--------+
+|  1002 | Kapil    | 15000 | 1970-01-01 |       2300 |     10 |
+|  1006 | Dravid   | 19000 | 1985-01-01 |       2400 |     10 |
+|  1004 | Williams |  9000 | 2001-01-01 |       NULL |     30 |
+|  1005 | John     |  5000 | 2005-01-01 |       NULL |     30 |
++-------+----------+-------+------------+------------+--------+
+4 rows in set (0.00 sec)
+
+mysql> select * from dept d where d.DeptNo = e.DeptNo having COUNT(e.EmpNo) >1;
+ERROR 1054 (42S22): Unknown column 'e.DeptNo' in 'where clause'
+mysql> select * from dept d emp e where d.DeptNo = e.DeptNo having COUNT(e.EmpNo) >1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'emp e where d.DeptNo = e.DeptNo having COUNT(e.EmpNo) >1' at line 1
+mysql> select * from dept d join emp e on d.deptno = e.deptno
+    -> having count(e.empno)>1
+    -> ;
+ERROR 1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'trial.d.DeptNo'; this is incompatible with sql_mode=only_full_group_by
+mysql> select * from dept d join emp e on d.deptno = e.deptno
+    -> group by dept
+    -> having count(e.empno)>1;
+ERROR 1054 (42S22): Unknown column 'dept' in 'group statement'
+mysql> select * from dept d join emp e on d.deptno = e.deptno
+    -> group by *
+    -> having count(e.empno)>1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '*
+having count(e.empno)>1' at line 2
+mysql> select d.deptno d.dname d.loc from dept d join emp e on d.deptno = e.deptno
+    -> group by d.deptno d.dname d.loc
+    -> having count(e.empno)>1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.dname d.loc from dept d join emp e on d.deptno = e.deptno
+group by d.deptno d.d' at line 1
+mysql> select d.deptno, d.dname, d.loc from dept d join emp e on d.deptno = e.deptno
+    -> group by d.deptno, d.dname, d.loc
+    -> having count(e.empno)>1;
++--------+------------+-----------+
+| deptno | dname      | loc       |
++--------+------------+-----------+
+|     10 | Accounts   | Bangalore |
+|     20 | IT         | Delhi     |
+|     30 | Production | Chennai   |
++--------+------------+-----------+
+3 rows in set (0.02 sec)
+
+mysql> select * from emp e like e.ename = "S%";
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like e.ename = "S%"' at line 1
+mysql> select * from emp e like e.ename = 'S%';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like e.ename = 'S%'' at line 1
+mysql> select * from emp e like e.ename "S%";
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like e.ename "S%"' at line 1
+mysql> select * from emp  like ename "S%";
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like ename "S%"' at line 1
+mysql> select * from emp where ename like "S%";
++-------+--------+-------+------------+------------+--------+
+| EmpNo | Ename  | Sal   | Hire_Date  | Commission | DeptNo |
++-------+--------+-------+------------+------------+--------+
+|  1001 | Sachin | 19000 | 1990-01-01 |       2100 |     20 |
+|  1003 | Stefen | 12000 | 1990-01-01 |        500 |     20 |
++-------+--------+-------+------------+------------+--------+
+2 rows in set (0.01 sec)
+
+mysql> select * from emp
+    -> where timestampdiff(year, hire_date, curdate())>2;
++-------+----------+-------+------------+------------+--------+
+| EmpNo | Ename    | Sal   | Hire_Date  | Commission | DeptNo |
++-------+----------+-------+------------+------------+--------+
+|  1001 | Sachin   | 19000 | 1990-01-01 |       2100 |     20 |
+|  1002 | Kapil    | 15000 | 1970-01-01 |       2300 |     10 |
+|  1003 | Stefen   | 12000 | 1990-01-01 |        500 |     20 |
+|  1004 | Williams |  9000 | 2001-01-01 |       NULL |     30 |
+|  1005 | John     |  5000 | 2005-01-01 |       NULL |     30 |
+|  1006 | Dravid   | 19000 | 1985-01-01 |       2400 |     10 |
+|  1007 | Martin   | 21000 | 2000-01-01 |       1040 |   NULL |
++-------+----------+-------+------------+------------+--------+
+7 rows in set (0.01 sec)
+
+mysql> select * from emp replace(e.ename, 'a', '#');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'replace(e.ename, 'a', '#')' at line 1
+mysql> select empno e,replace(ename, 'a','#'), sal, hire_date,commission,deptno from emp;
++------+-------------------------+-------+------------+------------+--------+
+| e    | replace(ename, 'a','#') | sal   | hire_date  | commission | deptno |
++------+-------------------------+-------+------------+------------+--------+
+| 1001 | S#chin                  | 19000 | 1990-01-01 |       2100 |     20 |
+| 1002 | K#pil                   | 15000 | 1970-01-01 |       2300 |     10 |
+| 1003 | Stefen                  | 12000 | 1990-01-01 |        500 |     20 |
+| 1004 | Willi#ms                |  9000 | 2001-01-01 |       NULL |     30 |
+| 1005 | John                    |  5000 | 2005-01-01 |       NULL |     30 |
+| 1006 | Dr#vid                  | 19000 | 1985-01-01 |       2400 |     10 |
+| 1007 | M#rtin                  | 21000 | 2000-01-01 |       1040 |   NULL |
++------+-------------------------+-------+------------+------------+--------+
+7 rows in set (0.01 sec)
+
+mysql> select d.dname , sum(e.sal) as total_salary from dept d,  emp e join emp on e.deptno = d.deptno group by d.name, total_salary;
+ERROR 1054 (42S22): Unknown column 'd.deptno' in 'on clause'
+mysql> select d.dname , sum(e.sal) as total_salary from dept d,  emp e join emp on e.deptno = d.deptno group by d.name;
+ERROR 1054 (42S22): Unknown column 'd.deptno' in 'on clause'
+mysql> select d.dname , sum(e.sal) as total_salary from dept d,  emp e join emp on e.deptno = d.deptno group by d.dname;
+ERROR 1054 (42S22): Unknown column 'd.deptno' in 'on clause'
+mysql> select d.dname , sum(e.sal) as total_salary from dept d join emp on e.deptno = d.deptno group by d.dname;
+ERROR 1054 (42S22): Unknown column 'e.sal' in 'field list'
+mysql> select d.dname , sum(e.sal) as total_salary from dept d,  emp e join emp on e.deptno = d.deptno group by d.dname;
+ERROR 1054 (42S22): Unknown column 'd.deptno' in 'on clause'
+mysql> select d.dname , sum(e.sal) as total_salary from dept d, join emp e on e.deptno = d.deptno group by d.dname;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'join emp e on e.deptno = d.deptno group by d.dname' at line 1
+mysql> select d.dname , sum(e.sal) as total_salary from dept d join emp e on e.deptno = d.deptno group by d.dname;
++------------+--------------+
+| dname      | total_salary |
++------------+--------------+
+| IT         |        31000 |
+| Accounts   |        34000 |
+| Production |        14000 |
++------------+--------------+
+3 rows in set (0.02 sec)
+
+mysql> ALTER TABLE emp 
+    -> ADD COLUMN Mgr INT;
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM emp;
++-------+----------+-------+------------+------------+--------+------+
+| EmpNo | Ename    | Sal   | Hire_Date  | Commission | DeptNo | Mgr  |
++-------+----------+-------+------------+------------+--------+------+
+|  1001 | Sachin   | 19000 | 1990-01-01 |       2100 |     20 | NULL |
+|  1002 | Kapil    | 15000 | 1970-01-01 |       2300 |     10 | NULL |
+|  1003 | Stefen   | 12000 | 1990-01-01 |        500 |     20 | NULL |
+|  1004 | Williams |  9000 | 2001-01-01 |       NULL |     30 | NULL |
+|  1005 | John     |  5000 | 2005-01-01 |       NULL |     30 | NULL |
+|  1006 | Dravid   | 19000 | 1985-01-01 |       2400 |     10 | NULL |
+|  1007 | Martin   | 21000 | 2000-01-01 |       1040 |   NULL | NULL |
++-------+----------+-------+------------+------------+--------+------+
+7 rows in set (0.01 sec)
+
+mysql> UPDATE emp SET Mgr = 1003 WHERE EmpNo = 1001;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE emp SET Mgr = 1003 WHERE EmpNo = 1002;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE emp SET Mgr = 1007 WHERE EmpNo = 1003;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE emp SET Mgr = 1007 WHERE EmpNo = 1004;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE emp SET Mgr = 1006 WHERE EmpNo = 1005;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE emp SET Mgr = 1007 WHERE EmpNo = 1006;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE emp SET Mgr = NULL WHERE EmpNo = 1007;
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 1  Changed: 0  Warnings: 0
+
+mysql> SELECT * FROM emp;
++-------+----------+-------+------------+------------+--------+------+
+| EmpNo | Ename    | Sal   | Hire_Date  | Commission | DeptNo | Mgr  |
++-------+----------+-------+------------+------------+--------+------+
+|  1001 | Sachin   | 19000 | 1990-01-01 |       2100 |     20 | 1003 |
+|  1002 | Kapil    | 15000 | 1970-01-01 |       2300 |     10 | 1003 |
+|  1003 | Stefen   | 12000 | 1990-01-01 |        500 |     20 | 1007 |
+|  1004 | Williams |  9000 | 2001-01-01 |       NULL |     30 | 1007 |
+|  1005 | John     |  5000 | 2005-01-01 |       NULL |     30 | 1006 |
+|  1006 | Dravid   | 19000 | 1985-01-01 |       2400 |     10 | 1007 |
+|  1007 | Martin   | 21000 | 2000-01-01 |       1040 |   NULL | NULL |
++-------+----------+-------+------------+------------+--------+------+
+7 rows in set (0.00 sec)
+
+mysql> select e.*, d.dname, d.deptno, d.loc from dept d left join emp e on e.deptno=d.deptno;
++-------+----------+-------+------------+------------+--------+------+------------+--------+-----------+
+| EmpNo | Ename    | Sal   | Hire_Date  | Commission | DeptNo | Mgr  | dname      | deptno | loc       |
++-------+----------+-------+------------+------------+--------+------+------------+--------+-----------+
+|  1002 | Kapil    | 15000 | 1970-01-01 |       2300 |     10 | 1003 | Accounts   |     10 | Bangalore |
+|  1006 | Dravid   | 19000 | 1985-01-01 |       2400 |     10 | 1007 | Accounts   |     10 | Bangalore |
+|  1001 | Sachin   | 19000 | 1990-01-01 |       2100 |     20 | 1003 | IT         |     20 | Delhi     |
+|  1003 | Stefen   | 12000 | 1990-01-01 |        500 |     20 | 1007 | IT         |     20 | Delhi     |
+|  1004 | Williams |  9000 | 2001-01-01 |       NULL |     30 | 1007 | Production |     30 | Chennai   |
+|  1005 | John     |  5000 | 2005-01-01 |       NULL |     30 | 1006 | Production |     30 | Chennai   |
+|  NULL | NULL     |  NULL | NULL       |       NULL |   NULL | NULL | Sales      |     40 | Hyd       |
+|  NULL | NULL     |  NULL | NULL       |       NULL |   NULL | NULL | Admin      |     50 | London    |
++-------+----------+-------+------------+------------+--------+------+------------+--------+-----------+
+8 rows in set (0.01 sec)
+
+mysql> update emp set sal= sal+(0.1*sal);
+Query OK, 7 rows affected (0.02 sec)
+Rows matched: 7  Changed: 7  Warnings: 0
+
+mysql> SELECT * FROM emp;
++-------+----------+-------+------------+------------+--------+------+
+| EmpNo | Ename    | Sal   | Hire_Date  | Commission | DeptNo | Mgr  |
++-------+----------+-------+------------+------------+--------+------+
+|  1001 | Sachin   | 20900 | 1990-01-01 |       2100 |     20 | 1003 |
+|  1002 | Kapil    | 16500 | 1970-01-01 |       2300 |     10 | 1003 |
+|  1003 | Stefen   | 13200 | 1990-01-01 |        500 |     20 | 1007 |
+|  1004 | Williams |  9900 | 2001-01-01 |       NULL |     30 | 1007 |
+|  1005 | John     |  5500 | 2005-01-01 |       NULL |     30 | 1006 |
+|  1006 | Dravid   | 20900 | 1985-01-01 |       2400 |     10 | 1007 |
+|  1007 | Martin   | 23100 | 2000-01-01 |       1040 |   NULL | NULL |
++-------+----------+-------+------------+------------+--------+------+
+7 rows in set (0.00 sec)
+
+mysql> delete e from emp e join dept d on d.deptno = e.deptno where d.loc = "Chennai";
+Query OK, 2 rows affected (0.02 sec)
+
+mysql> SELECT * FROM emp;
++-------+--------+-------+------------+------------+--------+------+
+| EmpNo | Ename  | Sal   | Hire_Date  | Commission | DeptNo | Mgr  |
++-------+--------+-------+------------+------------+--------+------+
+|  1001 | Sachin | 20900 | 1990-01-01 |       2100 |     20 | 1003 |
+|  1002 | Kapil  | 16500 | 1970-01-01 |       2300 |     10 | 1003 |
+|  1003 | Stefen | 13200 | 1990-01-01 |        500 |     20 | 1007 |
+|  1006 | Dravid | 20900 | 1985-01-01 |       2400 |     10 | 1007 |
+|  1007 | Martin | 23100 | 2000-01-01 |       1040 |   NULL | NULL |
++-------+--------+-------+------------+------------+--------+------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT ename, (sal + IFNULL(commission, 0)) AS gross_salary 
+    -> FROM emp;
++--------+--------------+
+| ename  | gross_salary |
++--------+--------------+
+| Sachin |        23000 |
+| Kapil  |        18800 |
+| Stefen |        13700 |
+| Dravid |        23300 |
+| Martin |        24140 |
++--------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT ename, (sal + commission) AS gross_salary 
+    -> FROM emp;
++--------+--------------+
+| ename  | gross_salary |
++--------+--------------+
+| Sachin |        23000 |
+| Kapil  |        18800 |
+| Stefen |        13700 |
+| Dravid |        23300 |
+| Martin |        24140 |
++--------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> alter table emp modify column ename varchar(250)
+    -> ;
+Query OK, 0 rows affected (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc emp;
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| EmpNo      | int          | NO   | PRI | NULL    | auto_increment |
+| ename      | varchar(250) | YES  |     | NULL    |                |
+| Sal        | int          | YES  |     | NULL    |                |
+| Hire_Date  | date         | YES  |     | NULL    |                |
+| Commission | int          | YES  |     | NULL    |                |
+| DeptNo     | int          | YES  | MUL | NULL    |                |
+| Mgr        | int          | YES  |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.05 sec)
+
+mysql> date.currdate();
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'date.currdate()' at line 1
+mysql> select currdate()
+    -> ;
+ERROR 1305 (42000): FUNCTION trial.currdate does not exist
+mysql> select curdate()
+    -> ;
++------------+
+| curdate()  |
++------------+
+| 2025-02-28 |
++------------+
+1 row in set (0.01 sec)
+
+mysql> notee
